@@ -31,4 +31,4 @@ jobs:
     - name: Run
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: pwd && ls
+      run: ./main
