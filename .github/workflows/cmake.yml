@@ -1,13 +1,13 @@
 name: CMake
 
-on: [push]
+on: [push, pull_request]
 
 env:
   BUILD_TYPE: Release
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,3 +23,8 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
+      
+    - name: Run
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ls
