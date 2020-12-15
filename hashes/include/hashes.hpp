@@ -11,6 +11,30 @@ const uint64_t BigPrime = 2305843009213693951;
 std::mt19937 gen{};
 std::uniform_int_distribution<size_t> dist{1, BigPrime};
 
+// Abstract base class for hash functions
+template<typename Key>
+class HashFunction {
+public:
+    HashFunction() {};
+    virtual ~HashFunction() = 0;
+
+    virtual size_t operator()(const Key& key) = 0;
+};
+template<typename Key>
+HashFunction<Key>::~HashFunction() {};
+
+// Abstract base class for hash-based data structures (maps) 
+template<typename Key, typename Value>
+class HashMap {
+public:
+    HashMap() {};
+    virtual ~HashMap() = 0;
+
+    virtual const Value& operator[](const Key& key) = 0;
+};
+template<typename Key, typename Value>
+HashMap<Key, Value>::~HashMap() {};
+
 /*
 Custom univarsal family of hash functions used for this research
 
@@ -18,25 +42,23 @@ We are casting everything to static_cast<size_t>
 */
 
 template <typename Key>
-class CustomHash {
+class CustomHash : public HashFunction<Key> {
 private:
     uint64_t a_param{0};
     uint64_t b_param{0};
-    // with this default table size, this function can be used w/o any hash at all
     size_t table_size{1};
 
 public:
     CustomHash();
     explicit CustomHash(size_t table_size);
 
-    void resize(size_t n);
-    size_t operator()(const Key& key);
-};
-
-template <typename Key>
-CustomHash<Key>::CustomHash(size_t table_size): table_size{table_size} {
-    a_param = dist(gen);
-    b_param = dist(gen);
+    void resize(size_t n) { this->table_size = n; };
+    // TODO: maybe not `static_cast` but smth else?
+    size_t operator()(const Key& key) {
+        return static_cast<size_t>(
+        (static_cast<uint64_t>(key) * a_param + b_param) % BigPrime % table_size
+        );
+    };
 };
 
 template <typename Key>
@@ -45,18 +67,10 @@ CustomHash<Key>::CustomHash(): table_size{1} {
     b_param = dist(gen);
 };
 
-template <typename Key>
-void CustomHash<Key>::resize(size_t n) {
-    this->table_size = n;
-};
-
-// TODO: maybe not `static_cast` but smth else?
-template <typename Key>
-size_t CustomHash<Key>::operator()(const Key& key) {
-    // magic goes here, not 100% sure in it
-    return static_cast<size_t>(
-        (static_cast<uint64_t>(key) * a_param + b_param) % BigPrime % table_size
-    );
+template<typename Key>
+CustomHash<Key>::CustomHash(size_t table_size): table_size{table_size} {
+    a_param = dist(gen);
+    b_param = dist(gen);
 };
 
 /*
@@ -64,7 +78,7 @@ Hash Map with collisions resolved by chaining
 */
 
 template<typename Key, typename Value>
-class HashMap_Chained {
+class HashMap_Chained : public HashMap<Key, Value> {
 private:
     std::vector<std::vector<std::pair<Key, Value>>> data{};
     CustomHash<Key> hash{};
@@ -74,6 +88,14 @@ public:
 
     void insert(const Key& key, const Value& value);
     const Value& find(const Key& key);
+    virtual const Value& operator[](const Key& key) {
+        size_t table_index = this->hash(key);
+        for (auto &elem : this->data[table_index]) {
+            if (elem.first == key) { return elem.second; }
+        }
+    throw std::invalid_argument("No value with such key found");
+    };
+
     void remove(const Key& key);
 
     size_t size();
@@ -144,5 +166,32 @@ void HashMap_Chained<Key, Value>::print() {
     }
     std::cout << "]" << std::endl;
 };
+
+// class CustomHash_Strings {
+// private:
+//     uint64_t a_param{0};
+//     // with this default table size, this function can be used w/o any hash at all
+//     size_t table_size{1};
+// public:
+//     CustomHash_Strings();
+//     explicit CustomHash_Strings(size_t table_size);
+
+//     void resize(size_t n);
+//     size_t operator()(const std::string& key);
+// };
+
+// CustomHash_Strings::CustomHash_Strings(size_t table_size): table_size{table_size} {
+//     a_param = dist(gen);
+// };
+
+// void CustomHash_Strings::resize(size_t n) {
+//     this->table_size = n;
+// };
+
+// size_t CustomHash_Strings::operator()(const std::string& key) {
+//     return static_cast<size_t>(
+//         (static_cast<uint64_t>(key) * a_param) % BigPrime % table_size
+//     );
+// };
 
 #endif //HASHES_HASH_HASHES_H

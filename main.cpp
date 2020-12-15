@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "hashes.hpp"
 //#include "hash_table.hpp"
-//#include "hash_table_list.hpp"\
+//#include "hash_table_list.hpp"
 
 int main() {
     auto hash_map = HashMap_Chained<int, std::string>{100000};
@@ -14,7 +14,7 @@ int main() {
     hash_map.remove(2);
     hash_map.print();
 
-    // auto fun = CustomHash<int>{10000};
+    // auto fun = CustomHash<int>{};
     // auto res = fun(10);
     // std::cout << res << std::endl;
     // std::cout << (uint64_t) std::string("heh") << std::endl;
