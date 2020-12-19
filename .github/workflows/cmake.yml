@@ -28,7 +28,12 @@ jobs:
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
       
-    - name: Run
+    - name: Run main
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./main
+      run: ./mushroom_run
+
+    - name: Run tests
+      working-directory: ${{runner.workspace}}/build/tests
+      shell: bash
+      run: ./mushroom_tests
