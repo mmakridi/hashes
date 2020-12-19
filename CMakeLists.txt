@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(mushroom_hash)
+project(mushroom)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -15,5 +15,6 @@ add_subdirectory(hashes)
 
 include_directories(hashes/include)
 link_directories(hashes/src)
+
 add_executable(main main.cpp)
 target_link_libraries(main lib_hash)
