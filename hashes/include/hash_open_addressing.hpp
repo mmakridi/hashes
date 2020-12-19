@@ -22,7 +22,7 @@ template<typename Key>
 void CustomHashLinear<Key>::set_hash_parameters()
 {
     CustomHash<Key>::set_hash_parameters();
-    std::uniform_int_distribution<uint64_t> dist{0, static_cast<uint64_t>(uint64_t(1) << w) - 1};
+    std::uniform_int_distribution<uint64_t> dist{0, static_cast<uint64_t>(uint64_t(1) << this->w) - 1};
     c_param = dist(gen);
     //to get с and m  coprime numbers
     if (!(c_param & 1))
@@ -38,10 +38,10 @@ protected:
 public:
     CustomHashQuadratic(){};
     size_t get_new_key(const size_t attemp_number) {
-        return static_cast<uint64_t>(cur_hash +
+        return static_cast<uint64_t>(this->cur_hash +
                                      attemp_number * c1_param +
                                      attemp_number * attemp_number * c2_param)
-               & (m - 1);
+               & (this->m - 1);
     }
 };
 
@@ -60,8 +60,8 @@ public:
     void set_hash_parameters();
 
     size_t operator()(const Key& key) {
-        cur_h1 = (static_cast<uint64_t>(key * a1_param + b1_param)) >> (w - M);
-        cur_h2 = (static_cast<uint64_t>(key * a2_param + b2_param)) >> (w - M);
+        cur_h1 = (static_cast<uint64_t>(key * a1_param + b1_param)) >> (this->w - this->M);
+        cur_h2 = (static_cast<uint64_t>(key * a2_param + b2_param)) >> (this->w - this->M);
         if (!(cur_h2 & 1))
             cur_h2++;
         return cur_h1;
@@ -69,15 +69,17 @@ public:
     size_t get_new_key(const size_t attemp_number) {
         return static_cast<uint64_t>(cur_h1 +
                                      attemp_number * cur_h2)
-               & (m - 1);
+               & (this->m - 1);
     }
 };
 
 template<typename Key>
 void CustomHashDouble<Key>::set_hash_parameters()
 {
-    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(1) << w) - 1};
-    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(1) << (w - M)) - 1};
+    std::uniform_int_distribution<uint64_t> dist_a{0,
+                                                   static_cast<uint64_t>(uint64_t(1) << this->w) - 1};
+    std::uniform_int_distribution<uint64_t> dist_b{0,
+                                                   static_cast<uint64_t>(uint64_t(1) << (this->w - this->M)) - 1};
     a1_param = dist_a(gen);
     //to get odd number
     if (!(a1_param & 1))
