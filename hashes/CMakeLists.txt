@@ -1,2 +1,2 @@
 include_directories(include)
-add_library(lib_hash src/hashes.cpp)
+add_library(mushroom_lib src/hashes.cpp)
