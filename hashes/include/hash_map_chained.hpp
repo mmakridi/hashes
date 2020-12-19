@@ -37,8 +37,11 @@ public:
 
 template<typename Key, typename Value>
 HashMapChained<Key, Value>::HashMapChained(size_t n){
-    this->data.resize(n);
-    this->hash.resize(n);
+    uint64_t M = static_cast<uint64_t>(ceil(log2(n)));
+    uint64_t m = uint64_t(1) << M;
+    this->data.resize(m);
+    this->hash.set_table_size(m, M);
+    this->hash.set_hash_parameters();
 };
 
 template<typename Key, typename Value>
