@@ -14,7 +14,7 @@ public:
     CustomHashLinear(){};
     void set_hash_parameters();
     size_t get_new_key(const size_t attemp_number) {
-        return static_cast<uint64_t>(cur_hash + attemp_number * c_param) & (m - 1);
+        return static_cast<uint64_t>(this->cur_hash + attemp_number * c_param) & (this->m - 1);
     }
 };
 
