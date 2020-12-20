@@ -1,10 +1,6 @@
-//
-// Created by psmolnik on 12/19/2020.
-//
-
 #include "hashes.hpp"
-#ifndef MUSHROOM_HASH_OPEN_ADDRESSING_HPP
-#define MUSHROOM_HASH_OPEN_ADDRESSING_HPP
+#ifndef HASH_OPEN_ADDRESSING_HPP
+#define HASH_OPEN_ADDRESSING_HPP
 
 template<typename Key>
 class CustomHashLinear : public CustomHash<Key> {
@@ -192,9 +188,8 @@ void HashMapOpenAddressing<Key, Value, Hash>::print()
     for (size_t i = 0; i < data.size(); i++)
     {
         if(initialized_data[i] == true)
-            std::cout << "table index = " << i << ", (" << data[i].first << " ," << data[i].second << ")\n";
+            std::cout << "table index = " << i << ", (" << data[i].first << " ," << data[i].second << ")" << std::endl;
     }
 }
 
-
-#endif //MUSHROOM_HASH_OPEN_ADDRESSING_HPP
+#endif //HASH_OPEN_ADDRESSING_HPP

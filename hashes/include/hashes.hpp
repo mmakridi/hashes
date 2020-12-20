@@ -3,9 +3,19 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <cmath>
 
 #ifndef HASHES_HPP
 #define HASHES_HPP
+
+const uint64_t BigPrime = 2305843009213693951;
+// const uint64_t BigPrime = 2305843009213693967;
+// const uint64_t BigPrime = 9007199254740991;
+// const uint64_t BigPrime = 9007199254740881;
+// const uint64_t BigPrime = 2147483647;
+// const uint64_t BigPrime = 23456789;
+// const uint64_t BigPrime = 2059039;
+// const uint64_t BigPrime = 2001511;
 
 std::mt19937 gen{};
 
@@ -84,6 +94,42 @@ void CustomHash<Key>::set_hash_parameters()
     if (!(a_param & 1))
         a_param++;
     b_param = dist_b(gen);
+};
+
+class CustomHashStrings {
+protected:
+    uint64_t m{2};
+    uint64_t M{1};
+    uint64_t w{64};
+    uint64_t a_param{0};
+    size_t curr_hash{0};
+public:
+    CustomHashStrings(){};
+    void set_table_size(const uint64_t m, const uint64_t M)
+    {
+        this->m = m;
+        this->M = M;
+    };
+    void set_hash_parameters();
+    size_t operator()(const std::string& key) {
+        size_t length = key.size();
+        this->curr_hash = 0;
+        for (size_t i = 0; i < length; ++i) {
+            curr_hash += static_cast<size_t>(
+                (static_cast<uint64_t>(key[i] * std::pow(a_param, i))) % BigPrime
+            );
+        }
+        return curr_hash;
+    };
+
+};
+
+void CustomHashStrings::set_hash_parameters() {
+    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(1) << w) - 1};
+    a_param = dist_a(gen);
+    //to get odd number
+    if (!(a_param & 1))
+        a_param++;
 };
 
 // class CustomHash_Strings {

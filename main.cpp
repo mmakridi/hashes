@@ -1,22 +1,21 @@
-#include "hashes.hpp"
 #include <string>
 #include <map>
 #include <unordered_map>
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
 #include <hash_map>
+#include "hashes.hpp"
 #include "hash_map_chained.hpp"
 #include "hash_open_addressing.hpp"
 
-//#include "hash_table.hpp"
-//#include "hash_table_list.hpp"
-
 int main() {
-    auto hash_map = HashMapChained<int, std::string>{10};
-    hash_map.insert(1, "first");
-    hash_map.insert(2, "second");
-    std::cout << hash_map.find(1) << std::endl;
-    hash_map.erase(2);
-    hash_map.print();
+    // auto hash_map = HashMapChained<int, std::string>{10};
+    // hash_map.insert(1, "first");
+    // hash_map.insert(2, "second");
+    // std::cout << hash_map.find(1) << std::endl;
+    // hash_map.erase(2);
+    // hash_map.print();
+
+    std::cout << static_cast<uint64_t>('l') << std::endl;
 
     // auto fun = CustomHash<int>{};
     // auto res = fun(10);

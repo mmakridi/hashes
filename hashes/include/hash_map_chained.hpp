@@ -1,10 +1,6 @@
-//
-// Created by psmolnik on 12/19/2020.
-//
-
-#include <hashes.hpp>
-#ifndef MUSHROOM_HASH_MAP_CHAINED_HPP
-#define MUSHROOM_HASH_MAP_CHAINED_HPP
+#include "hashes.hpp"
+#ifndef HASH_MAP_CHAINED_HPP
+#define HASH_MAP_CHAINED_HPP
 
 /*
 Hash Map with collisions resolved by chaining
@@ -103,5 +99,4 @@ void HashMapChained<Key, Value>::print() {
     std::cout << "]" << std::endl;
 };
 
-#endif //MUSHROOM_HASH_MAP_CHAINED_HPP
-
+#endif //HASH_MAP_CHAINED_HPP
