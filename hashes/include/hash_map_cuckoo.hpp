@@ -10,11 +10,12 @@ protected:
     Hash hash_first{};
     Hash hash_second{};
     size_t rehash_tries{3};
+    uint64_t lookup_length{0};
 
 public:
-    HashMapCuckoo(size_t n);
+    explicit HashMapCuckoo(size_t n);
 
-    void insert(const Key& key, const Value& value, bool try_rehash);
+    void insert(const Key& key, const Value& value, bool try_rehash = true);
     const Value& find(const Key& key);
     virtual const Value& operator[](const Key& key) {
         return find(key);
@@ -28,8 +29,8 @@ public:
 
 template<typename Key, typename Value, typename Hash>
 HashMapCuckoo<Key, Value, Hash>::HashMapCuckoo(size_t n){
-    uint64_t M = static_cast<uint64_t>(ceil(log2(n)));
-    uint64_t lookup_length = static_cast<uint64_t>(ceil(log2(n)));
+    auto M = static_cast<uint64_t>(ceil(log2(n)));
+    lookup_length = static_cast<uint64_t>(ceil(log2(n)));
     uint64_t m = uint64_t(1) << M;
     this->data.resize(m);
     this->initialized_data.resize(m, false);
@@ -45,14 +46,14 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
     hash_second.set_hash_parameters();
     auto tmp_data = data;
     auto tmp_init = initialized_data;
-    initialized_data.resize(m, false);
+    initialized_data.resize(data.size(), false);
     for (std::pair<std::pair<Key, size_t>, Value> &elem : tmp_data) {
         insert(elem.first.first, elem.second, false);
     }
 };
 
 template<typename Key, typename Value, typename Hash>
-void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash = true) {
+void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash) {
     size_t index_0 = hash_first(key);
     size_t index_1 = hash_second(key);
 
@@ -64,7 +65,7 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     }
 
     // if not, try its 2nd position and maybe move other elements
-    auto to_move_elem{{key, index_1}, value};
+    std::pair<std::pair<Key, size_t>, Value> to_move_elem{{key, index_1}, value};
     for (int i = 0; i < lookup_length; ++i) {
         auto try_key = to_move_elem.first.second;
         if (!initialized_data[try_key]) {
@@ -81,6 +82,7 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     if (try_rehash) {
         for (size_t i = 0; i < rehash_tries; ++i) {
             try {
+                std::cout << "rehashing" << std::endl;
                 rehash();
             } catch (std::overflow_error &e) {
                 continue;
@@ -103,18 +105,25 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         }
     }
 
-    throw std::overflow_error("Couldn't successfully rehash after" + this->rehash_tries + "tries");
+    throw std::overflow_error("Couldn't successfully rehash after several tries");
 };
 
 template<typename Key, typename Value, typename Hash>
 const Value& HashMapCuckoo<Key, Value, Hash>::find(const Key& key) {
-    size_t index_0 = hash_first(key), index_1{0};
-    for (size_t i = 0; i < data.size(), ++i) {
+    size_t index_0 = hash_first(key);
+    size_t index_1 = hash_second(key);
+
+    if (initialized_data[index_0] && data[index_0].first.first == key) {
+        return data[index_0].second;
+    }
+
+    index_0 = index_1;
+    for (size_t i = 0; i < data.size(); ++i) {
         if (initialized_data[index_0]) {
             if (data[index_0].first.first == key) {
                 return data[index_0].second;
             }
-            index_0 = dta[index_0].first.second;
+            index_0 = data[index_0].first.second;
             continue;
         }
         throw std::invalid_argument("No value with such key found");
@@ -125,7 +134,7 @@ const Value& HashMapCuckoo<Key, Value, Hash>::find(const Key& key) {
 template<typename Key, typename Value, typename Hash>
 const Value HashMapCuckoo<Key, Value, Hash>::erase(const Key& key) {
     size_t index_0 = hash_first(key), index_1{0};
-    for (size_t i = 0; i < data.size(), ++i) {
+    for (size_t i = 0; i < data.size(); ++i) {
         if (initialized_data[index_0]) {
             if (data[index_0].first.first == key) {
                 initialized_data[index_0] = false;
@@ -149,7 +158,7 @@ void HashMapCuckoo<Key, Value, Hash>::print()
 {
     for (size_t i = 0; i < data.size(); i++)
     {
-        if(initialized_data[i] == true)
+        if(initialized_data[i])
             std::cout << "table index = " << i << ", (" << data[i].first << " ," << data[i].second << ")" << std::endl;
     }
 }

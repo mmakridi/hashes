@@ -111,8 +111,8 @@ public:
 template<typename Key>
 void CustomHash<Key>::set_hash_parameters()
 {
-    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(1) << w) - 1};
-    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(1) << (w - M)) - 1};
+    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(2) << (w-1)) - 1};
+    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(2) << (w-M-1)) - 1};
     a_param = dist_a(gen);
     //to get odd number
     if (!(a_param & 1))
@@ -163,6 +163,7 @@ template <typename Hash>
 void CustomHashStrings<Hash>::set_hash_parameters() {
     std::uniform_int_distribution<uint64_t> dist_a{0, p};
     a_param = dist_a(gen);
+    hash.set_hash_parameters();
 };
 
 #endif //HASHES_HPP

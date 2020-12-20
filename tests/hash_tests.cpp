@@ -6,6 +6,7 @@
 #include "hashes.hpp"
 #include "hash_map_chained.hpp"
 #include "hash_open_addressing.hpp"
+#include "hash_map_cuckoo.hpp"
 
 template <typename T>
 class HashMapChainedTest : public testing::Test {};
@@ -41,6 +42,28 @@ TYPED_TEST_CASE(HashMapOpenAddressingTest, probing_types);
 TYPED_TEST(HashMapOpenAddressingTest, test_probing)
 {
     auto hash_map = HashMapOpenAddressing<int, std::string, TypeParam>{10};
+    size_t hash_map_exp_size = 16;
+    EXPECT_TRUE(hash_map.size() == hash_map_exp_size);
+
+    hash_map.insert(1, "first");
+    hash_map.insert(2, "second");
+
+    EXPECT_EQ(hash_map.find(1), "first");
+
+    EXPECT_NO_THROW(hash_map.erase(1));
+    EXPECT_ANY_THROW(hash_map.erase(1));
+
+    EXPECT_NO_THROW(hash_map.find(2));
+    EXPECT_ANY_THROW(hash_map.find(1));
+}
+
+class CuckooHashTest : public testing::Test {};
+
+//TYPED_TEST_CASE(CuckooHashTest, probing_types);
+TEST(CuckooHashTest, cuckoo)
+{
+//    auto hash_map = HashMapOpenAddressing<int, std::string, TypeParam>{10};
+    auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int>>{10};
     size_t hash_map_exp_size = 16;
     EXPECT_TRUE(hash_map.size() == hash_map_exp_size);
 

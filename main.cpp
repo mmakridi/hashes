@@ -6,6 +6,7 @@
 #include "hashes.hpp"
 #include "hash_map_chained.hpp"
 #include "hash_open_addressing.hpp"
+#include "hash_map_cuckoo.hpp"
 
 int main() {
     // auto hash_map = HashMapChained<int, std::string>{10};
@@ -15,12 +16,21 @@ int main() {
     // hash_map.erase(2);
     // hash_map.print();
 
-    std::cout << static_cast<uint64_t>('l') << std::endl;
+    std::cout << 7%3 << std::endl;
+    std::cout << (7&(3-1)) << std::endl;
+    return EXIT_SUCCESS;
 
-    // auto fun = CustomHash<int>{};
-    // auto res = fun(10);
-    // std::cout << res << std::endl;
-    // std::cout << (uint64_t) std::string("heh") << std::endl;
+//    auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int>>{20};
+//    hash_map.insert(1, "first");
+//    hash_map.insert(2, "second");
+//    std::cout << hash_map.find(2) << std::endl;
+
+    auto hash_map = HashMapCuckoo<std::string, int, CustomHashStrings<CustomHash<uint64_t>>>{20};
+    hash_map.insert("first", 1);
+    hash_map.insert("second", 2);
+    std::cout << hash_map.find("second");
+
+
 /*
 
     auto hash_map = HashMapOpenAddressing<int, std::string, CustomHashDouble<int> >{10};
