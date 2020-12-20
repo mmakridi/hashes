@@ -90,7 +90,7 @@ protected:
     uint64_t w{64};
     uint64_t a_param{0};
     uint64_t b_param{0};
-    Key cur_hash;
+    size_t cur_hash;
 public:
     CustomHash(){};
     void set_table_size(const uint64_t m, const uint64_t M)
@@ -111,8 +111,8 @@ public:
 template<typename Key>
 void CustomHash<Key>::set_hash_parameters()
 {
-    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(1) << w) - 1};
-    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(1) << (w - M)) - 1};
+    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(2) << (w-1)) - 1};
+    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(2) << (w-M-1)) - 1};
     a_param = dist_a(gen);
     //to get odd number
     if (!(a_param & 1))
@@ -150,19 +150,23 @@ public:
         curr_hash = 0;
         for (size_t i = 0; i < length; ++i) {
             curr_hash += static_cast<size_t>(
-                static_cast<uint64_t>(static_cast<uint64_t>(key[i]) * std::pow(a_param, i)) % p % m
+                static_cast<uint64_t>(static_cast<uint64_t>((key[i]) * std::pow(a_param, i)) % p) % m
             );
         }
         curr_hash = hash(curr_hash);
         return curr_hash;
     };
-
+    size_t get_new_key(const size_t attemp_number) {
+//        return static_cast<uint64_t>(this->curr_hash + attemp_number * c_param) & (this->m - 1);
+        return hash.get_new_key(attemp_number);
+    };
 };
 
 template <typename Hash>
 void CustomHashStrings<Hash>::set_hash_parameters() {
     std::uniform_int_distribution<uint64_t> dist_a{0, p};
     a_param = dist_a(gen);
+    hash.set_hash_parameters();
 };
 
 #endif //HASHES_HPP

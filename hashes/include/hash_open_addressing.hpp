@@ -100,7 +100,7 @@ protected:
 public:
     HashMapOpenAddressing(size_t n);
 
-    void insert(const Key& key, const Value& value);
+    bool insert(const Key& key, const Value& value);
     const Value& find(const Key& key);
     virtual const Value& operator[](const Key& key) {
         return find(key);
@@ -121,7 +121,7 @@ HashMapOpenAddressing<Key, Value, Hash>::HashMapOpenAddressing(size_t n){
 };
 
 template<typename Key, typename Value, typename Hash>
-void HashMapOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value& value)
+bool HashMapOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value& value)
 {
     size_t table_index = hash(key);
 
@@ -130,7 +130,7 @@ void HashMapOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value
         {
             data[table_index] = {key, value};
             initialized_data[table_index] = true;
-            return;
+            return true;
         }
         else
         {
