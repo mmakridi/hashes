@@ -90,7 +90,7 @@ protected:
     uint64_t w{64};
     uint64_t a_param{0};
     uint64_t b_param{0};
-    Key cur_hash;
+    size_t cur_hash;
 public:
     CustomHash(){};
     void set_table_size(const uint64_t m, const uint64_t M)
@@ -150,7 +150,7 @@ public:
         curr_hash = 0;
         for (size_t i = 0; i < length; ++i) {
             curr_hash += static_cast<size_t>(
-                static_cast<uint64_t>(static_cast<uint64_t>(key[i]) * std::pow(a_param, i)) % p % m
+                static_cast<uint64_t>(static_cast<uint64_t>((key[i]) * std::pow(a_param, i)) % p) & (m - 1)
             );
         }
         curr_hash = hash(curr_hash);

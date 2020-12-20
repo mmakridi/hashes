@@ -15,7 +15,7 @@ using test_types = testing::Types<int, double, long double>;
 TYPED_TEST_CASE(HashMapChainedTest, test_types);
 TYPED_TEST(HashMapChainedTest, test_types)
 {
-    auto hash_map = HashMapChained<TypeParam, std::string>{10};
+    auto hash_map = HashMapChained<TypeParam, std::string, CustomHash<TypeParam> >{10};
     size_t hash_map_exp_size = 16;
     EXPECT_TRUE(hash_map.size() == hash_map_exp_size);
 
