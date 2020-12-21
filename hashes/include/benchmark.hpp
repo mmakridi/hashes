@@ -228,11 +228,12 @@ std::vector<double> erase_measure_time(size_t max_iter)
     std::vector<double> results;
     std::vector<Key> keys;
     auto hash_map = HashMapType{max_iter * 4};
-    for(size_t i = 0; i < max_iter; i+= 1) {
+    while(keys.size() != max_iter) {
         Key key = random_key<Key>();
         uint64_t value = random_key<int>();
-        hash_map.insert(key, value);
-        keys.push_back(key);
+        bool done = hash_map.insert(key, value);
+        if (done)
+            keys.push_back(key);
     }
     for(size_t i = 0; i < keys.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();

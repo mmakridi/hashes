@@ -15,7 +15,7 @@ private:
 public:
     explicit HashMapChained(size_t n);
 
-    void insert(const Key& key, const Value& value);
+    bool insert(const Key& key, const Value& value);
     const Value& find(const Key& key);
     virtual const Value& operator[](const Key& key) {
         size_t table_index = this->hash(key);
@@ -41,14 +41,15 @@ HashMapChained<Key, Value, Hash>::HashMapChained(size_t n){
 };
 
 template<typename Key, typename Value, typename Hash>
-void HashMapChained<Key, Value, Hash>::insert(const Key& key, const Value& value){
+bool HashMapChained<Key, Value, Hash>::insert(const Key& key, const Value& value){
     size_t table_index = this->hash(key);
     for (auto &elem : this->data[table_index]) {
         if (elem.first == key) {
-            return;
+            return false;
         }
     }
     this->data[table_index].push_back({key, value});
+    return true;
 };
 
 template<typename Key, typename Value, typename Hash>

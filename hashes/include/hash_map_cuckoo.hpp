@@ -15,7 +15,7 @@ protected:
 public:
     explicit HashMapCuckoo(size_t n);
 
-    void insert(const Key& key, const Value& value, bool try_rehash = true);
+    bool insert(const Key& key, const Value& value, bool try_rehash = true);
     const Value& find(const Key& key);
     virtual const Value& operator[](const Key& key) {
         return find(key);
@@ -64,7 +64,7 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
 };
 
 template<typename Key, typename Value, typename Hash>
-void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash) {
+bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash) {
     size_t index_0 = hash_first(key);
     size_t index_1 = hash_second(key);
 
@@ -72,7 +72,7 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     if (!initialized_data[index_0]) {
         data[index_0] = {{key, index_1}, value};
         initialized_data[index_0] = true;
-        return;
+        return true;
     }
 
     // if not, try its 2nd position and maybe move other elements
@@ -83,7 +83,7 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         if (!initialized_data[try_key]) {
             data[try_key] = to_move_elem;
             initialized_data[try_key] = true;
-            return;
+            return true;
         }
         std::pair<std::pair<Key, size_t>, Value> tmp_elem{{data[try_key].first.first, try_key}, data[try_key].second};
         auto tmp_key = data[try_key].first.second;
@@ -122,13 +122,13 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         if (!initialized_data[index_0]) {
             data[index_0] = {{key, index_1}, value};
             initialized_data[index_0] = true;
-            return;
+            return true;
         }
         // if fits to its 2nd position, then OK
         if (!initialized_data[index_1]) {
             data[index_1] = {{key, index_0}, value};
             initialized_data[index_1] = true;
-            return;
+            return true;
         }
     }
 

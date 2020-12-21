@@ -108,12 +108,12 @@ int main() {
     write_to_csv(filepath, times, col_names);
     times.clear();
     */
-
+/*
     times.push_back(erase_measure_time<std::string, HashMapChained<std::string,
             int, CustomHashStrings<CustomHash<uint64_t> > > >(max_str));
 
-    //times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-    //        int, CustomHashStrings<CustomHash<uint64_t> > > >(max_str));
+    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+            int, CustomHashStrings<CustomHash<uint64_t> > > >(max_str));
 
     times.push_back(erase_measure_time<std::string, HashMapOpenAddressing<std::string,
             int, CustomHashStrings<CustomHashLinear<uint64_t> > > >(max_str));
@@ -131,6 +131,7 @@ int main() {
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
+    */
     // auto hash_map = HashMapChained<int, std::string>{10};
     // hash_map.insert(1, "first");
     // hash_map.insert(2, "second");
