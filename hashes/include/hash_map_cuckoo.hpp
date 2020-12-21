@@ -74,8 +74,8 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         initialized_data[index_0] = true;
         return true;
     } else if (data[index_0].first.first == key) {
-        data[index_0].second = value;
-        return true;
+//        data[index_0].second = value;
+        return false;
     }
 
     // if not, try its 2nd position and maybe move other elements
@@ -88,8 +88,8 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
             initialized_data[try_key] = true;
             return true;
         } else if (data[try_key].first.first == key) {
-            data[try_key].second = value;
-            return true;
+//            data[try_key].second = value;
+            return false;
         }
         std::pair<std::pair<Key, size_t>, Value> tmp_elem{{data[try_key].first.first, try_key}, data[try_key].second};
         auto tmp_key = data[try_key].first.second;
@@ -130,8 +130,8 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
             initialized_data[index_0] = true;
             return true;
         } else if (data[index_0].first.first == key) {
-            data[index_0].second = value;
-            return true;
+//            data[index_0].second = value;
+            return false;
         }
         // if fits to its 2nd position, then OK
         if (!initialized_data[index_1]) {
@@ -139,8 +139,8 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
             initialized_data[index_1] = true;
             return true;
         } else if (data[index_1].first.first == key) {
-            data[index_1].second = value;
-            return true;
+//            data[index_1].second = value;
+            return false;
         }
     }
 
@@ -178,7 +178,7 @@ Value HashMapCuckoo<Key, Value, Hash>::erase(const Key& key) {
         return data[index_1].second;
     }
 
-    throw std::invalid_argument("No value with such key found");
+//    throw std::invalid_argument("No value with such key found");
 };
 
 template<typename Key, typename Value, typename Hash>
