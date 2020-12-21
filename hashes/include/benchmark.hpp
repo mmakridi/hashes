@@ -8,22 +8,43 @@
 #include <fstream>
 #include "map"
 
+const std::string characters_set = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+std::uniform_int_distribution<> distribution(0, characters_set.size() - 1);
 std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
+std::uniform_int_distribution<uint64_t> dist_string(1, 9);
 
 #ifndef BENCHMARK_HPP
 #define BENCHMARK_HPP
 
-template<typename HashMapType>
-std::vector<double> insert_measure_time()
+template<typename T>
+T random_key()
+{
+    uint64_t key = dist(gen);
+    return key;
+}
+
+template<>
+std::string random_key<std::string>()
+{
+    size_t len = dist_string(gen);
+    std::string random_string;
+    for (std::size_t i = 0; i < len; ++i)
+    {
+        random_string += characters_set[distribution(gen)];
+    }
+    return random_string;
+}
+
+template<typename Key, typename HashMapType>
+std::vector<double> insert_measure_time(size_t max_iter)
 {
     std::vector<double> results;
-    size_t max = 20000;
-    //size_t step = 10;
-    auto hash_map = HashMapType{max * 2};
-    for(size_t i = 0; i < max; i+= 1)
+    auto hash_map = HashMapType{max_iter * 4};
+    for(size_t i = 0; i < max_iter; i+= 1)
     {
-        uint64_t key = dist(gen);
-        uint64_t value = dist(gen);
+        std::cout << i << std::endl;
+        Key key = random_key<Key>();
+        uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert(key, value);
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -34,16 +55,15 @@ std::vector<double> insert_measure_time()
 }
 
 template<>
-std::vector<double> insert_measure_time<std::map<int, int> >()
+std::vector<double> insert_measure_time<int, std::map<int, int> >(size_t max_iter)
 {
     std::vector<double> results;
-    size_t max = 20000;
     //size_t step = 10;
     auto hash_map = std::map<int, int>();
-    for(size_t i = 0; i < max; i+= 1)
+    for(size_t i = 0; i < max_iter; i+= 1)
     {
-        uint64_t key = dist(gen);
-        uint64_t value = dist(gen);
+        uint64_t key = random_key<int>();
+        uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -54,22 +74,265 @@ std::vector<double> insert_measure_time<std::map<int, int> >()
 }
 
 template<>
-std::vector<double> insert_measure_time<std::hash_map<int, int> >()
+std::vector<double> insert_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
 {
     std::vector<double> results;
-    size_t max = 20000;
-    //size_t step = 10;
-    auto hash_map = std::map<int, int>();
-    for(size_t i = 0; i < max; i+= 1)
+    auto hash_map = std::map<std::string, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
     {
-        uint64_t key = dist(gen);
-        uint64_t value = dist(gen);
+        std::string key = random_key<std::string>();
+        uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
 
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
+    return results;
+}
+
+template<>
+std::vector<double> insert_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::hash_map<int, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        uint64_t key = random_key<int>();
+        uint64_t value = random_key<int>();
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.insert({key, value});
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<>
+std::vector<double> insert_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::hash_map<std::string, int> ();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        std::string key = random_key<std::string>();
+        uint64_t value = random_key<int>();
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.insert({key, value});
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<typename Key, typename HashMapType>
+std::vector<double> find_measure_time(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = HashMapType{max_iter * 4};
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        Key key = random_key<Key>();
+        uint64_t value = random_key<int>();
+        hash_map.insert(key, value);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.find(key);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<>
+std::vector<double> find_measure_time<int, std::map<int, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::map<int, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        uint64_t key = random_key<int>();
+        uint64_t value = random_key<int>();
+        hash_map.insert({key, value});
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.find(key);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<>
+std::vector<double> find_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::map<std::string, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        std::string key = random_key<std::string>();
+        uint64_t value = random_key<int>();
+        hash_map.insert({key, value});
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.find(key);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<>
+std::vector<double> find_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::hash_map<int, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        uint64_t key = random_key<int>();
+        uint64_t value = random_key<int>();
+        hash_map.insert({key, value});
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.find(key);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<>
+std::vector<double> find_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    auto hash_map = std::hash_map<std::string, int>();
+    for(size_t i = 0; i < max_iter; i+= 1)
+    {
+        std::string key = random_key<std::string>();
+        uint64_t value = random_key<int>();
+        hash_map.insert({key, value});
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.find(key);
+        auto t2 = std::chrono::high_resolution_clock::now();
+
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    return results;
+}
+
+template<typename Key, typename HashMapType>
+std::vector<double> erase_measure_time(size_t max_iter)
+{
+    std::vector<double> results;
+    std::vector<Key> keys;
+    auto hash_map = HashMapType{max_iter * 4};
+    for(size_t i = 0; i < max_iter; i+= 1) {
+        Key key = random_key<Key>();
+        uint64_t value = random_key<int>();
+        hash_map.insert(key, value);
+        keys.push_back(key);
+    }
+    for(size_t i = 0; i < keys.size(); i+= 1) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.erase(keys[i]);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    std::reverse( results.begin(), results.end() );
+
+    return results;
+}
+
+template<>
+std::vector<double> erase_measure_time<int, std::map<int, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    std::vector<int> keys;
+    auto hash_map = std::map<int, int>();
+    for(size_t i = 0; i < max_iter; i+= 1) {
+        int key = random_key<int>();
+        int value = random_key<int>();
+        hash_map.insert({key, value});
+        keys.push_back(key);
+    }
+    for(size_t i = 0; i < keys.size(); i+= 1) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.erase(keys[i]);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    std::reverse( results.begin(), results.end() );
+
+    return results;
+}
+
+template<>
+std::vector<double> erase_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    std::vector<std::string> keys;
+    auto hash_map = std::map<std::string, int>();
+    for(size_t i = 0; i < max_iter; i+= 1) {
+        std::string key = random_key<std::string>();
+        int value = random_key<int>();
+        hash_map.insert({key, value});
+        keys.push_back(key);
+    }
+    for(size_t i = 0; i < keys.size(); i+= 1) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.erase(keys[i]);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    std::reverse( results.begin(), results.end() );
+
+    return results;
+}
+
+template<>
+std::vector<double> erase_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    std::vector<int> keys;
+    auto hash_map = std::hash_map<int, int>();
+    for(size_t i = 0; i < max_iter; i+= 1) {
+        int key = random_key<int>();
+        int value = random_key<int>();
+        hash_map.insert({key, value});
+        keys.push_back(key);
+    }
+    for(size_t i = 0; i < keys.size(); i+= 1) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.erase(keys[i]);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    std::reverse( results.begin(), results.end() );
+
+    return results;
+}
+template<>
+std::vector<double> erase_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+{
+    std::vector<double> results;
+    std::vector<std::string> keys;
+    auto hash_map = std::hash_map<std::string, int>();
+    for(size_t i = 0; i < max_iter; i+= 1) {
+        std::string key = random_key<std::string>();
+        int value = random_key<int>();
+        hash_map.insert({key, value});
+        keys.push_back(key);
+    }
+    for(size_t i = 0; i < keys.size(); i+= 1) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        hash_map.erase(keys[i]);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
+    }
+    std::reverse( results.begin(), results.end() );
+
     return results;
 }
 

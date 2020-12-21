@@ -150,7 +150,7 @@ public:
         curr_hash = 0;
         for (size_t i = 0; i < length; ++i) {
             curr_hash += static_cast<size_t>(
-                static_cast<uint64_t>(static_cast<uint64_t>((key[i]) * std::pow(a_param, i)) % p) & (m - 1)
+                static_cast<uint64_t>(static_cast<uint64_t>((key[i]) * std::pow(a_param, i)) % p) % m
             );
         }
         curr_hash = hash(curr_hash);
