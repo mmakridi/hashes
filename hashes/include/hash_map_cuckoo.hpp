@@ -73,6 +73,9 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         data[index_0] = {{key, index_1}, value};
         initialized_data[index_0] = true;
         return true;
+    } else if (data[index_0].first.first == key) {
+        data[index_0].second = value;
+        return true;
     }
 
     // if not, try its 2nd position and maybe move other elements
@@ -83,6 +86,9 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         if (!initialized_data[try_key]) {
             data[try_key] = to_move_elem;
             initialized_data[try_key] = true;
+            return true;
+        } else if (data[try_key].first.first == key) {
+            data[try_key].second = value;
             return true;
         }
         std::pair<std::pair<Key, size_t>, Value> tmp_elem{{data[try_key].first.first, try_key}, data[try_key].second};
@@ -123,11 +129,17 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
             data[index_0] = {{key, index_1}, value};
             initialized_data[index_0] = true;
             return true;
+        } else if (data[index_0].first.first == key) {
+            data[index_0].second = value;
+            return true;
         }
         // if fits to its 2nd position, then OK
         if (!initialized_data[index_1]) {
             data[index_1] = {{key, index_0}, value};
             initialized_data[index_1] = true;
+            return true;
+        } else if (data[index_1].first.first == key) {
+            data[index_1].second = value;
             return true;
         }
     }
