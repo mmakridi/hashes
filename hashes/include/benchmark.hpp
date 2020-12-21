@@ -1,6 +1,7 @@
 //
 // Created by psmolnik on 12/21/2020.
 //
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
 #include "hashes.hpp"
 #include "hash_map_chained.hpp"
 #include "hash_map_cuckoo.hpp"
