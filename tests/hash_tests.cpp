@@ -60,7 +60,7 @@ TYPED_TEST(HashMapOpenAddressingTest, test_probing)
 class CuckooHashTest : public testing::Test {};
 
 TEST(CuckooHashTest, cuckoo) {
-    auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int>>{10};
+    auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int> >{10};
     size_t hash_map_exp_size = 16;
     EXPECT_TRUE(hash_map.size() == hash_map_exp_size);
 

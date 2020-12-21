@@ -85,7 +85,8 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     }
     
     // if unsuccessful in lookup_length steps, then try to rehash all table
-    if (try_rehash) {
+    //if (try_rehash) {
+    if (1) {
         // saving to_move_elem to arbitrary place in table not to lose it
         // +1 linear complexity iteration in case rehash happens, doesn't change asymptotic
         for (size_t i = 0; i < data.size(); ++i) {
@@ -119,7 +120,7 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         }
     }
 
-    throw std::overflow_error("Couldn't successfully rehash after several tries");
+    //throw std::overflow_error("Couldn't successfully rehash after several tries");
 };
 
 template<typename Key, typename Value, typename Hash>
