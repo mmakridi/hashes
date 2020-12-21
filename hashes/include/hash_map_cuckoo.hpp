@@ -21,7 +21,7 @@ public:
         return find(key);
     };
     void change_rehash_tries(size_t n) {rehash_tries = n;};
-    const Value erase(const Key& key);
+    Value erase(const Key& key);
     void rehash();
     size_t size();
     void print();
@@ -48,8 +48,13 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
     auto tmp_init = initialized_data;
     initialized_data.resize(data.size(), false);
     try {
-        for (std::pair<std::pair<Key, size_t>, Value> &elem : tmp_data) {
-            insert(elem.first.first, elem.second, false);
+//        for (std::pair<std::pair<Key, size_t>, Value> &elem : tmp_data) {
+//            insert(elem.first.first, elem.second, false);
+//        }
+        for (size_t i = 0; i < tmp_data.size(); ++i) {
+            if (tmp_init[i]) {
+                insert(tmp_data[i].first.first, tmp_data[i].second, false);
+            }
         }
     } catch (std::overflow_error &e) {
         data = tmp_data;
@@ -71,17 +76,25 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     }
 
     // if not, try its 2nd position and maybe move other elements
-    std::pair<std::pair<Key, size_t>, Value> to_move_elem{{key, index_1}, value};
+    size_t try_key = index_1;
+    std::pair<std::pair<Key, size_t>, Value> to_move_elem{{key, index_0}, value};
     for (int i = 0; i < lookup_length; ++i) {
-        auto try_key = to_move_elem.first.second;
+//        try_key = to_move_elem.first.second;
         if (!initialized_data[try_key]) {
             data[try_key] = to_move_elem;
             initialized_data[try_key] = true;
             return;
         }
-        auto tmp = data[try_key];
+        std::pair<std::pair<Key, size_t>, Value> tmp_elem{{data[try_key].first.first, try_key}, data[try_key].second};
+        auto tmp_key = data[try_key].first.second;
         data[try_key] = to_move_elem;
-        to_move_elem = tmp;
+//        auto tmp_key = tmp_elem.first.second;
+//        to_move_elem = data[try_key];
+        try_key = tmp_key;
+        to_move_elem = tmp_elem;
+//        try_key = tmp_elem.first.second;
+//        auto tmp = data[try_key];
+//        to_move_elem = tmp;
     }
     
     // if unsuccessful in lookup_length steps, then try to rehash all table
@@ -132,34 +145,28 @@ const Value& HashMapCuckoo<Key, Value, Hash>::find(const Key& key) {
         return data[index_0].second;
     }
 
-    index_0 = index_1;
-    for (size_t i = 0; i < data.size(); ++i) {
-        if (initialized_data[index_0]) {
-            if (data[index_0].first.first == key) {
-                return data[index_0].second;
-            }
-            index_0 = data[index_0].first.second;
-            continue;
-        }
-        throw std::invalid_argument("No value with such key found");
+    if (initialized_data[index_1] && data[index_1].first.first == key) {
+        return data[index_1].second;
     }
+
     throw std::invalid_argument("No value with such key found");
 };
 
 template<typename Key, typename Value, typename Hash>
-const Value HashMapCuckoo<Key, Value, Hash>::erase(const Key& key) {
-    size_t index_0 = hash_first(key), index_1{0};
-    for (size_t i = 0; i < data.size(); ++i) {
-        if (initialized_data[index_0]) {
-            if (data[index_0].first.first == key) {
-                initialized_data[index_0] = false;
-                return data[index_0].second;
-            }
-            index_0 = data[index_0].first.second;
-            continue;
-        }
-        throw std::invalid_argument("No value with such key found");
+Value HashMapCuckoo<Key, Value, Hash>::erase(const Key& key) {
+    size_t index_0 = hash_first(key);
+    size_t index_1 = hash_second(key);
+
+    if (initialized_data[index_0] && data[index_0].first.first == key) {
+        initialized_data[index_0] = false;
+        return data[index_0].second;
     }
+
+    if (initialized_data[index_1] && data[index_1].first.first == key) {
+        initialized_data[index_1] = false;
+        return data[index_1].second;
+    }
+
     throw std::invalid_argument("No value with such key found");
 };
 

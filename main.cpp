@@ -9,6 +9,7 @@
 #include "hash_map_cuckoo.hpp"
 #include "benchmark.hpp"
 int main() {
+    /*
     std::vector<std::string> col_names = {"Chained", "Linear", "Quadratic", "Double",
                                           "std::map", "std::hash_map"};
     std::vector<std::vector<double> >times;
@@ -23,7 +24,16 @@ int main() {
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
+     */
 
+
+    auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int> >{10};
+    size_t hash_map_exp_size = 16;
+
+    hash_map.insert(1, "first", true);
+    hash_map.insert(2, "second", true);
+    hash_map.find(1);
+    hash_map.erase(1);
 
 
     // auto hash_map = HashMapChained<int, std::string>{10};
