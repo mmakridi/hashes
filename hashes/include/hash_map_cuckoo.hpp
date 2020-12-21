@@ -47,8 +47,14 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
     auto tmp_data = data;
     auto tmp_init = initialized_data;
     initialized_data.resize(data.size(), false);
-    for (std::pair<std::pair<Key, size_t>, Value> &elem : tmp_data) {
-        insert(elem.first.first, elem.second, false);
+    try {
+        for (std::pair<std::pair<Key, size_t>, Value> &elem : tmp_data) {
+            insert(elem.first.first, elem.second, false);
+        }
+    } catch (std::overflow_error &e) {
+        data = tmp_data;
+        initialized_data = tmp_init;
+        throw e;
     }
 };
 
@@ -80,6 +86,14 @@ void HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
     
     // if unsuccessful in lookup_length steps, then try to rehash all table
     if (try_rehash) {
+        // saving to_move_elem to arbitrary place in table not to lose it
+        // +1 linear complexity iteration in case rehash happens, doesn't change asymptotic
+        for (size_t i = 0; i < data.size(); ++i) {
+            if (!initialized_data[i]) {
+                data[i] = to_move_elem;
+                break;
+            }
+        }
         for (size_t i = 0; i < rehash_tries; ++i) {
             try {
                 std::cout << "rehashing" << std::endl;

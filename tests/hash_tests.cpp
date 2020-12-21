@@ -59,16 +59,13 @@ TYPED_TEST(HashMapOpenAddressingTest, test_probing)
 
 class CuckooHashTest : public testing::Test {};
 
-//TYPED_TEST_CASE(CuckooHashTest, probing_types);
-TEST(CuckooHashTest, cuckoo)
-{
-//    auto hash_map = HashMapOpenAddressing<int, std::string, TypeParam>{10};
+TEST(CuckooHashTest, cuckoo) {
     auto hash_map = HashMapCuckoo<int, std::string, CustomHash<int>>{10};
     size_t hash_map_exp_size = 16;
     EXPECT_TRUE(hash_map.size() == hash_map_exp_size);
 
-    hash_map.insert(1, "first");
-    hash_map.insert(2, "second");
+    hash_map.insert(1, "first", true);
+    hash_map.insert(2, "second", true);
 
     EXPECT_EQ(hash_map.find(1), "first");
 
