@@ -231,6 +231,7 @@ std::vector<double> erase_measure_time(size_t max_iter)
     auto hash_map = HashMapType{max_iter * 4};
     while(keys.size() != max_iter) {
         Key key = random_key<Key>();
+        //std::cout << key << std::endl;
         uint64_t value = random_key<int>();
         bool done = hash_map.insert(key, value);
         if (done)
@@ -238,6 +239,7 @@ std::vector<double> erase_measure_time(size_t max_iter)
     }
     for(size_t i = 0; i < keys.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
+        //std::cout << keys[i] << std::endl;
         hash_map.erase(keys[i]);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
