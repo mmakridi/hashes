@@ -156,7 +156,10 @@ public:
         curr_hash = hash(curr_hash);
         return curr_hash;
     };
-
+    size_t get_new_key(const size_t attemp_number) {
+//        return static_cast<uint64_t>(this->curr_hash + attemp_number * c_param) & (this->m - 1);
+        return hash.get_new_key(attemp_number);
+    };
 };
 
 template <typename Hash>

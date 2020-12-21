@@ -24,22 +24,19 @@ int main() {
 //    hash_map.insert(1, "first");
 //    hash_map.insert(2, "second");
 //    std::cout << hash_map.find(2) << std::endl;
-/*
-    auto hash_map = HashMapOpenAddressing<std::string, int, CustomHashStringsLinear<CustomHashLinear<int> > >{20};
+
+//    auto hash_map = HashMapCuckoo<std::string, int, CustomHashStrings<CustomHash<uint64_t>>>{20};
+//    hash_map.insert("first", 1);
+//    hash_map.insert("second", 2);
+//    std::cout << hash_map.find("second");
+
+
+    auto hash_map = HashMapOpenAddressing<std::string, int, CustomHashStrings<CustomHashLinear<uint64_t>>>{10};
     hash_map.insert("first", 1);
     hash_map.insert("second", 2);
-    std::cout << hash_map.find("second");
-*/
-
-/*
-
-    auto hash_map = HashMapOpenAddressing<int, std::string, CustomHashDouble<int> >{10};
-    hash_map.insert(1, "first");
-    hash_map.insert(2, "second");
-    std::cout << hash_map.find(1) << std::endl;
-    hash_map.erase(2);
+    std::cout << hash_map.find("first") << std::endl;
+    hash_map.erase("second");
     hash_map.print();
-*/
 
 // std::map and std::hash_map experiements
 /*
