@@ -7,7 +7,7 @@
 #include <chrono>
 #include <fstream>
 #include "map"
-
+#include "hash_map"
 const std::string characters_set = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 std::uniform_int_distribution<> distribution(0, characters_set.size() - 1);
 std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
