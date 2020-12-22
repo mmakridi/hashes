@@ -14,18 +14,27 @@ std::uniform_int_distribution<> distribution(0, characters_set.size() - 1);
 std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
 std::uniform_int_distribution<uint64_t> dist_string(1, 9);
 
-bool test_real_data = true;
+bool test_real_data = false;
 std::ifstream file_real_data("C:\\Users\\psmolnik\\Downloads\\hashes_dir\\hashes\\data\\words_alpha.txt");
 #ifndef BENCHMARK_HPP
 #define BENCHMARK_HPP
 
-template<typename T>
-T real_string()
+template<typename Key>
+Key real_string()
+{
+    Key data;
+    //std::getline(file_real_data, data);
+    return data;
+}
+
+template<>
+std::string real_string<std::string>()
 {
     std::string data;
     std::getline(file_real_data, data);
     return data;
 }
+
 template<typename T>
 T random_key()
 {
@@ -54,7 +63,7 @@ std::vector<double> insert_measure_time(size_t max_iter)
     {
         //std::cout << i << std::endl;
         Key key;
-        if(test_real_data) key = real_string<std::string>();
+        if(test_real_data) key = real_string<Key>();
         else key = random_key<Key>();
 
         uint64_t value = random_key<int>();
@@ -152,7 +161,7 @@ std::vector<double> find_measure_time(size_t max_iter)
     for(size_t i = 0; i < max_iter; i+= 1)
     {
         Key key;
-        if(test_real_data) key = real_string<std::string>();
+        if(test_real_data) key = real_string<Key>();
         else key = random_key<Key>();
         uint64_t value = random_key<int>();
         hash_map.insert(key, value);
@@ -253,7 +262,7 @@ std::vector<double> erase_measure_time(size_t max_iter)
     auto hash_map = HashMapType{max_iter * 4};
     while(keys.size() != max_iter) {
         Key key;
-        if(test_real_data) key = real_string<std::string>();
+        if(test_real_data) key = real_string<Key>();
         else key = random_key<Key>();
         uint64_t value = random_key<int>();
         bool done = hash_map.insert(key, value);
@@ -370,7 +379,7 @@ void write_to_csv(const std::string filename,
                   const std::vector<std::vector<double> >& data,
                   const std::vector<std::string>& col_names)
 {
-    std::ofstream my_file(filename);
+    std::ofstream my_file(filename, std::ofstream::trunc);
     std::cout << my_file.is_open() << std::endl;
     for(int i = 0; i < data.size(); ++i)
     {

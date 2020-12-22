@@ -1,6 +1,7 @@
 .idea
 .vscode
 cmake-build-debug
+cmake-build-release
 build
 cmake-build-debug-llvm11
 cmake-build-debug-visual-studio
