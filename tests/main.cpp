@@ -1,7 +1,6 @@
 //
 // Created by psmolnik on 12/20/2020.
 //
-
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv)

@@ -10,7 +10,6 @@ add_subdirectory(hashes)
 include_directories(hashes/include)
 link_directories(hashes/src)
 
-
 add_subdirectory(tools/googletest)
 add_subdirectory(tests)
 
