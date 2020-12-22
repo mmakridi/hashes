@@ -80,7 +80,6 @@ void HashMapChained<Key, Value, Hash>::erase(const Key& key) {
         // TODO: does const_iterator support incrementation?
         this->data[table_index].erase(this->data[table_index].begin() + del_index);
     } else {
-        std::cout << "a\n";
         throw std::invalid_argument("No value with such key found");
     }
 };
