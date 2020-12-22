@@ -7,11 +7,12 @@
 #include "hash_map_chained.hpp"
 #include "hash_open_addressing.hpp"
 #include "hash_map_cuckoo.hpp"
-//#include "benchmark.hpp"
+#include "benchmark.hpp"
 int main() {
-    /*
+//    /*
     size_t max_str = 100000;
     size_t max_int = 100000;
+    std::string repo_dir{"C:/Users/magin/Repositories/mushroom_hash"};
     std::vector<std::string> col_names = {"Chained", "Cucko", "Linear", "Quadratic", "Double",
                                           "std::map", "std::hash_map"};
     std::vector<std::vector<double> >times;
@@ -23,7 +24,7 @@ int main() {
     times.push_back(insert_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(max_int));
     times.push_back(insert_measure_time<int, std::map<int, int> >(max_int));
     times.push_back(insert_measure_time<int, std::hash_map<int, int> >(max_int));
-    std::string filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_insert_int.csv";
+    std::string filepath = repo_dir + "/data/hash_insert_int.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -39,7 +40,7 @@ int main() {
                     int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(max_str));
     times.push_back(insert_measure_time<std::string, std::map<std::string, int> >(max_str));
     times.push_back(insert_measure_time<std::string, std::hash_map<std::string, int> >(max_str));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_insert_string.csv";
+    filepath = repo_dir + "/data/hash_insert_string.csv";
 
     write_to_csv(filepath, times, col_names);
     times.clear();
@@ -51,7 +52,7 @@ int main() {
     times.push_back(find_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(max_int));
     times.push_back(find_measure_time<int, std::map<int, int> >(max_int));
     times.push_back(find_measure_time<int, std::hash_map<int, int> >(max_int));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_find_int.csv";
+    filepath = repo_dir + "/data/hash_find_int.csv";
 
     write_to_csv(filepath, times, col_names);
     times.clear();
@@ -68,7 +69,7 @@ int main() {
             int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(max_str));
     times.push_back(find_measure_time<std::string, std::map<std::string, int> >(max_str));
     times.push_back(find_measure_time<std::string, std::hash_map<std::string, int> >(max_str));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_find_string.csv";
+    filepath = repo_dir + "/data/hash_find_string.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -79,7 +80,7 @@ int main() {
     times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(max_int));
     times.push_back(erase_measure_time<int, std::map<int, int> >(max_int));
     times.push_back(erase_measure_time<int, std::hash_map<int, int> >(max_int));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_erase_int.csv";
+    filepath = repo_dir + "/data/hash_erase_int.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
@@ -104,11 +105,11 @@ int main() {
     times.push_back(erase_measure_time<std::string, std::map<std::string, int> >(max_str));
     times.push_back(erase_measure_time<std::string, std::hash_map<std::string, int> >(max_str));
 
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_erase_string.csv";
+    filepath = repo_dir + "/data/hash_erase_string.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
-*/
+//*/
 
 
     // auto hash_map = HashMapChained<int, std::string>{10};
