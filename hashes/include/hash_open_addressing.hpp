@@ -29,10 +29,11 @@ void CustomHashLinear<Key>::set_hash_parameters()
 template <typename Key>
 class CustomHashQuadratic : public CustomHash<Key> {
 protected:
-    uint64_t c1_param{7};
-    uint64_t c2_param{71};
+    uint64_t c1_param{0};
+    uint64_t c2_param{0};
 public:
     CustomHashQuadratic(){};
+    void set_hash_parameters();
     size_t get_new_key(const size_t attemp_number) {
         return static_cast<uint64_t>(this->cur_hash +
                                      attemp_number * c1_param +
@@ -41,6 +42,21 @@ public:
     }
 };
 
+template<typename Key>
+void CustomHashQuadratic<Key>::set_hash_parameters()
+{
+    CustomHash<Key>::set_hash_parameters();
+    std::uniform_int_distribution<uint64_t> dist{0, static_cast<uint64_t>(uint64_t(1) << this->w) - 1};
+    c1_param = dist(gen);
+    //to get с and m  coprime numbers
+    if (!(c1_param & 1))
+        c1_param++;
+
+    c2_param = dist(gen);
+    //to get с and m  coprime numbers
+    if (!(c2_param & 1))
+        c2_param++;
+};
 
 template <typename Key>
 class CustomHashDouble : public CustomHash<Key> {

@@ -14,9 +14,18 @@ std::uniform_int_distribution<> distribution(0, characters_set.size() - 1);
 std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
 std::uniform_int_distribution<uint64_t> dist_string(1, 9);
 
+bool test_real_data = true;
+std::ifstream file_real_data("C:\\Users\\psmolnik\\Downloads\\hashes_dir\\hashes\\data\\words_alpha.txt");
 #ifndef BENCHMARK_HPP
 #define BENCHMARK_HPP
 
+template<typename T>
+T real_string()
+{
+    std::string data;
+    std::getline(file_real_data, data);
+    return data;
+}
 template<typename T>
 T random_key()
 {
@@ -44,7 +53,10 @@ std::vector<double> insert_measure_time(size_t max_iter)
     for(size_t i = 0; i < max_iter; i+= 1)
     {
         //std::cout << i << std::endl;
-        Key key = random_key<Key>();
+        Key key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<Key>();
+
         uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert(key, value);
@@ -81,7 +93,9 @@ std::vector<double> insert_measure_time<std::string, std::map<std::string, int> 
     auto hash_map = std::map<std::string, int>();
     for(size_t i = 0; i < max_iter; i+= 1)
     {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
@@ -117,7 +131,9 @@ std::vector<double> insert_measure_time<std::string, std::hash_map<std::string, 
     auto hash_map = std::hash_map<std::string, int> ();
     for(size_t i = 0; i < max_iter; i+= 1)
     {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         uint64_t value = random_key<int>();
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
@@ -135,7 +151,9 @@ std::vector<double> find_measure_time(size_t max_iter)
     auto hash_map = HashMapType{max_iter * 4};
     for(size_t i = 0; i < max_iter; i+= 1)
     {
-        Key key = random_key<Key>();
+        Key key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<Key>();
         uint64_t value = random_key<int>();
         hash_map.insert(key, value);
         auto t1 = std::chrono::high_resolution_clock::now();
@@ -173,7 +191,9 @@ std::vector<double> find_measure_time<std::string, std::map<std::string, int> >(
     auto hash_map = std::map<std::string, int>();
     for(size_t i = 0; i < max_iter; i+= 1)
     {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         uint64_t value = random_key<int>();
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
@@ -211,7 +231,9 @@ std::vector<double> find_measure_time<std::string, std::hash_map<std::string, in
     auto hash_map = std::hash_map<std::string, int>();
     for(size_t i = 0; i < max_iter; i+= 1)
     {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         uint64_t value = random_key<int>();
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
@@ -230,7 +252,9 @@ std::vector<double> erase_measure_time(size_t max_iter)
     std::vector<Key> keys;
     auto hash_map = HashMapType{max_iter * 4};
     while(keys.size() != max_iter) {
-        Key key = random_key<Key>();
+        Key key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<Key>();
         uint64_t value = random_key<int>();
         bool done = hash_map.insert(key, value);
         if (done)
@@ -277,7 +301,9 @@ std::vector<double> erase_measure_time<std::string, std::map<std::string, int> >
     std::vector<std::string> keys;
     auto hash_map = std::map<std::string, int>();
     for(size_t i = 0; i < max_iter; i+= 1) {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         int value = random_key<int>();
         hash_map.insert({key, value});
         keys.push_back(key);
@@ -322,7 +348,9 @@ std::vector<double> erase_measure_time<std::string, std::hash_map<std::string, i
     std::vector<std::string> keys;
     auto hash_map = std::hash_map<std::string, int>();
     for(size_t i = 0; i < max_iter; i+= 1) {
-        std::string key = random_key<std::string>();
+        std::string key;
+        if(test_real_data) key = real_string<std::string>();
+        else key = random_key<std::string>();
         int value = random_key<int>();
         hash_map.insert({key, value});
         keys.push_back(key);
