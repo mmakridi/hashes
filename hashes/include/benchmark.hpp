@@ -11,39 +11,19 @@
 #include "hash_map"
 const std::string characters_set = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 std::uniform_int_distribution<> distribution(0, characters_set.size() - 1);
-std::uniform_int_distribution<uint64_t> dist(0, std::numeric_limits<uint64_t>::max());
+std::uniform_int_distribution<int> dist(0, std::numeric_limits<int>::max() - 1);
 std::uniform_int_distribution<uint64_t> dist_string(1, 9);
-
-bool test_real_data = false;
-std::ifstream file_real_data("C:\\Users\\psmolnik\\Downloads\\hashes_dir\\hashes\\data\\words_alpha.txt");
 #ifndef BENCHMARK_HPP
 #define BENCHMARK_HPP
 
-template<typename Key>
-Key real_string()
-{
-    Key data;
-    //std::getline(file_real_data, data);
-    return data;
-}
-
-template<>
-std::string real_string<std::string>()
+std::string get_real_string(std::ifstream& file_real_data)
 {
     std::string data;
     std::getline(file_real_data, data);
     return data;
 }
 
-template<typename T>
-T random_key()
-{
-    uint64_t key = dist(gen);
-    return key;
-}
-
-template<>
-std::string random_key<std::string>()
+std::string get_random_string()
 {
     size_t len = dist_string(gen);
     std::string random_string;
@@ -54,19 +34,54 @@ std::string random_key<std::string>()
     return random_string;
 }
 
+template<typename Key>
+std::vector<std::pair<Key, int> > create_vocabulary(size_t vocab_size)
+{
+    std::vector<std::pair<Key, int> > vocabulary(vocab_size);
+    for(size_t i = 0; i < vocabulary.size(); i++)
+    {
+        Key key = dist(gen);
+        int value = dist(gen);
+        vocabulary[i] = {key, value};
+    }
+    return vocabulary;
+}
+
+template<>
+std::vector<std::pair<std::string, int> > create_vocabulary<std::string>(size_t vocab_size)
+{
+    std::vector<std::pair<std::string, int> > vocabulary(vocab_size);
+    for(size_t i = 0; i < vocabulary.size(); i++)
+    {
+        std::string key = get_random_string();
+        int value = dist(gen);
+        vocabulary[i] = {key, value};
+    }
+    return vocabulary;
+}
+
+std::vector<std::pair<std::string, int> > create_real_data_vocabulary(std::string file_path, size_t vocab_size)
+{
+    std::ifstream file_real_data(file_path);
+    std::vector<std::pair<std::string, int> > vocabulary(vocab_size);
+    for(size_t i = 0; i < vocabulary.size(); i++)
+    {
+        std::string key = get_real_string(file_real_data);
+        int value = dist(gen);
+        vocabulary[i] = {key, value};
+    }
+    return vocabulary;
+}
+
 template<typename Key, typename HashMapType>
-std::vector<double> insert_measure_time(size_t max_iter)
+std::vector<double> insert_measure_time(std::vector<std::pair<Key, int> >& vocabulary)
 {
     std::vector<double> results;
-    auto hash_map = HashMapType{max_iter * 4};
-    for(size_t i = 0; i < max_iter; i+= 1)
+    auto hash_map = HashMapType{vocabulary.size() * 4};
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        //std::cout << i << std::endl;
-        Key key;
-        if(test_real_data) key = real_string<Key>();
-        else key = random_key<Key>();
-
-        uint64_t value = random_key<int>();
+        Key key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert(key, value);
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -77,15 +92,14 @@ std::vector<double> insert_measure_time(size_t max_iter)
 }
 
 template<>
-std::vector<double> insert_measure_time<int, std::map<int, int> >(size_t max_iter)
+std::vector<double> insert_measure_time<int, std::map<int, int> >(std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
-    //size_t step = 10;
     auto hash_map = std::map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        uint64_t key = random_key<int>();
-        uint64_t value = random_key<int>();
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -96,16 +110,15 @@ std::vector<double> insert_measure_time<int, std::map<int, int> >(size_t max_ite
 }
 
 template<>
-std::vector<double> insert_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
+std::vector<double> insert_measure_time<std::string, std::map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::map<std::string, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        uint64_t value = random_key<int>();
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -116,14 +129,14 @@ std::vector<double> insert_measure_time<std::string, std::map<std::string, int> 
 }
 
 template<>
-std::vector<double> insert_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+std::vector<double> insert_measure_time<int, std::hash_map<int, int> >(std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::hash_map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        uint64_t key = random_key<int>();
-        uint64_t value = random_key<int>();
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -134,16 +147,15 @@ std::vector<double> insert_measure_time<int, std::hash_map<int, int> >(size_t ma
 }
 
 template<>
-std::vector<double> insert_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+std::vector<double> insert_measure_time<std::string, std::hash_map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::hash_map<std::string, int> ();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        uint64_t value = random_key<int>();
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.insert({key, value});
         auto t2 = std::chrono::high_resolution_clock::now();
@@ -154,16 +166,14 @@ std::vector<double> insert_measure_time<std::string, std::hash_map<std::string, 
 }
 
 template<typename Key, typename HashMapType>
-std::vector<double> find_measure_time(size_t max_iter)
+std::vector<double> find_measure_time(std::vector<std::pair<Key, int> >& vocabulary)
 {
     std::vector<double> results;
-    auto hash_map = HashMapType{max_iter * 4};
-    for(size_t i = 0; i < max_iter; i+= 1)
+    auto hash_map = HashMapType{vocabulary.size() * 4};
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        Key key;
-        if(test_real_data) key = real_string<Key>();
-        else key = random_key<Key>();
-        uint64_t value = random_key<int>();
+        Key key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert(key, value);
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.find(key);
@@ -175,14 +185,15 @@ std::vector<double> find_measure_time(size_t max_iter)
 }
 
 template<>
-std::vector<double> find_measure_time<int, std::map<int, int> >(size_t max_iter)
+std::vector<double> find_measure_time<int, std::map<int, int> >
+        (std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        uint64_t key = random_key<int>();
-        uint64_t value = random_key<int>();
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.find(key);
@@ -194,16 +205,15 @@ std::vector<double> find_measure_time<int, std::map<int, int> >(size_t max_iter)
 }
 
 template<>
-std::vector<double> find_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
+std::vector<double> find_measure_time<std::string, std::map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::map<std::string, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        uint64_t value = random_key<int>();
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.find(key);
@@ -215,14 +225,15 @@ std::vector<double> find_measure_time<std::string, std::map<std::string, int> >(
 }
 
 template<>
-std::vector<double> find_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+std::vector<double> find_measure_time<int, std::hash_map<int, int> >
+        (std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::hash_map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        uint64_t key = random_key<int>();
-        uint64_t value = random_key<int>();
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.find(key);
@@ -234,16 +245,15 @@ std::vector<double> find_measure_time<int, std::hash_map<int, int> >(size_t max_
 }
 
 template<>
-std::vector<double> find_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+std::vector<double> find_measure_time<std::string, std::hash_map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
     auto hash_map = std::hash_map<std::string, int>();
-    for(size_t i = 0; i < max_iter; i+= 1)
+    for(size_t i = 0; i < vocabulary.size(); i+= 1)
     {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        uint64_t value = random_key<int>();
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
         hash_map.find(key);
@@ -255,23 +265,18 @@ std::vector<double> find_measure_time<std::string, std::hash_map<std::string, in
 }
 
 template<typename Key, typename HashMapType>
-std::vector<double> erase_measure_time(size_t max_iter)
+std::vector<double> erase_measure_time(std::vector<std::pair<Key, int> >& vocabulary)
 {
     std::vector<double> results;
-    std::vector<Key> keys;
-    auto hash_map = HashMapType{max_iter * 4};
-    while(keys.size() != max_iter) {
-        Key key;
-        if(test_real_data) key = real_string<Key>();
-        else key = random_key<Key>();
-        uint64_t value = random_key<int>();
-        bool done = hash_map.insert(key, value);
-        if (done)
-            keys.push_back(key);
+    auto hash_map = HashMapType{vocabulary.size() * 4};
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
+        Key key = vocabulary[i].first;
+        int value = vocabulary[i].second;
+        hash_map.insert(key, value);
     }
-    for(size_t i = 0; i < keys.size(); i+= 1) {
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.erase(keys[i]);
+        hash_map.erase(vocabulary[i].first);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
@@ -281,20 +286,19 @@ std::vector<double> erase_measure_time(size_t max_iter)
 }
 
 template<>
-std::vector<double> erase_measure_time<int, std::map<int, int> >(size_t max_iter)
+std::vector<double> erase_measure_time<int, std::map<int, int> >
+        (std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
-    std::vector<int> keys;
     auto hash_map = std::map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1) {
-        int key = random_key<int>();
-        int value = random_key<int>();
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
-        keys.push_back(key);
     }
-    for(size_t i = 0; i < keys.size(); i+= 1) {
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.erase(keys[i]);
+        hash_map.erase(vocabulary[i].first);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
@@ -304,22 +308,19 @@ std::vector<double> erase_measure_time<int, std::map<int, int> >(size_t max_iter
 }
 
 template<>
-std::vector<double> erase_measure_time<std::string, std::map<std::string, int> >(size_t max_iter)
+std::vector<double> erase_measure_time<std::string, std::map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
-    std::vector<std::string> keys;
     auto hash_map = std::map<std::string, int>();
-    for(size_t i = 0; i < max_iter; i+= 1) {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        int value = random_key<int>();
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
-        keys.push_back(key);
     }
-    for(size_t i = 0; i < keys.size(); i+= 1) {
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.erase(keys[i]);
+        hash_map.erase(vocabulary[i].first);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
@@ -329,20 +330,19 @@ std::vector<double> erase_measure_time<std::string, std::map<std::string, int> >
 }
 
 template<>
-std::vector<double> erase_measure_time<int, std::hash_map<int, int> >(size_t max_iter)
+std::vector<double> erase_measure_time<int, std::hash_map<int, int> >
+        (std::vector<std::pair<int, int> >& vocabulary)
 {
     std::vector<double> results;
-    std::vector<int> keys;
     auto hash_map = std::hash_map<int, int>();
-    for(size_t i = 0; i < max_iter; i+= 1) {
-        int key = random_key<int>();
-        int value = random_key<int>();
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
+        int key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
-        keys.push_back(key);
     }
-    for(size_t i = 0; i < keys.size(); i+= 1) {
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.erase(keys[i]);
+        hash_map.erase(vocabulary[i].first);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
@@ -351,22 +351,19 @@ std::vector<double> erase_measure_time<int, std::hash_map<int, int> >(size_t max
     return results;
 }
 template<>
-std::vector<double> erase_measure_time<std::string, std::hash_map<std::string, int> >(size_t max_iter)
+std::vector<double> erase_measure_time<std::string, std::hash_map<std::string, int> >
+        (std::vector<std::pair<std::string, int> >& vocabulary)
 {
     std::vector<double> results;
-    std::vector<std::string> keys;
     auto hash_map = std::hash_map<std::string, int>();
-    for(size_t i = 0; i < max_iter; i+= 1) {
-        std::string key;
-        if(test_real_data) key = real_string<std::string>();
-        else key = random_key<std::string>();
-        int value = random_key<int>();
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
+        std::string key = vocabulary[i].first;
+        int value = vocabulary[i].second;
         hash_map.insert({key, value});
-        keys.push_back(key);
     }
-    for(size_t i = 0; i < keys.size(); i+= 1) {
+    for(size_t i = 0; i < vocabulary.size(); i+= 1) {
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.erase(keys[i]);
+        hash_map.erase(vocabulary[i].first);
         auto t2 = std::chrono::high_resolution_clock::now();
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
     }
