@@ -39,7 +39,7 @@ int main() {
     string_dict.resize(max_iter);
 
     std::vector<std::pair<std::string, int> > real_data_dict = create_real_data_vocabulary
-            ("C:\\Users\\psmolnik\\Downloads\\hashes_dir\\hashes\\data\\words_alpha.txt", max_iter);
+            ("../data/words_alpha.txt", max_iter);
 
     times.push_back(insert_measure_time<std::string, HashMapChained<std::string,
             int, CustomHashStrings<CustomHash<uint64_t> > > >(real_data_dict));
@@ -53,7 +53,7 @@ int main() {
             int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(real_data_dict));
     times.push_back(insert_measure_time<std::string, std::map<std::string, int> >(real_data_dict));
     times.push_back(insert_measure_time<std::string, std::hash_map<std::string, int> >(real_data_dict));
-    std::string filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_insert_real_data.csv";
+    std::string filepath = "../data/hash_insert_real_data.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
@@ -71,7 +71,7 @@ int main() {
             int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(real_data_dict));
     times.push_back(find_measure_time<std::string, std::map<std::string, int> >(real_data_dict));
     times.push_back(find_measure_time<std::string, std::hash_map<std::string, int> >(real_data_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_find_real_data.csv";
+    filepath = "../data/hash_find_real_data.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
@@ -95,7 +95,7 @@ int main() {
     times.push_back(erase_measure_time<std::string, std::map<std::string, int> >(real_data_dict));
     times.push_back(erase_measure_time<std::string, std::hash_map<std::string, int> >(real_data_dict));
 
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_erase_real_data.csv";
+    filepath = "../data/hash_erase_real_data.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
@@ -108,7 +108,7 @@ int main() {
     times.push_back(insert_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(int_dict));
     times.push_back(insert_measure_time<int, std::map<int, int> >(int_dict));
     times.push_back(insert_measure_time<int, std::hash_map<int, int> >(int_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_insert_int.csv";
+    filepath = "../data/hash_insert_int.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -124,7 +124,7 @@ int main() {
                     int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(string_dict));
     times.push_back(insert_measure_time<std::string, std::map<std::string, int> >(string_dict));
     times.push_back(insert_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_insert_string.csv";
+    filepath = "../data/hash_insert_string.csv";
 
     write_to_csv(filepath, times, col_names);
     times.clear();
@@ -136,7 +136,7 @@ int main() {
     times.push_back(find_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(int_dict));
     times.push_back(find_measure_time<int, std::map<int, int> >(int_dict));
     times.push_back(find_measure_time<int, std::hash_map<int, int> >(int_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_find_int.csv";
+    filepath = "../data/hash_find_int.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -152,7 +152,7 @@ int main() {
             int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(string_dict));
     times.push_back(find_measure_time<std::string, std::map<std::string, int> >(string_dict));
     times.push_back(find_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_find_string.csv";
+    filepath = "../data/hash_find_string.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -163,7 +163,7 @@ int main() {
     times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(int_dict));
     times.push_back(erase_measure_time<int, std::map<int, int> >(int_dict));
     times.push_back(erase_measure_time<int, std::hash_map<int, int> >(int_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_erase_int.csv";
+    filepath = "../data/hash_erase_int.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
@@ -181,7 +181,7 @@ int main() {
             int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(string_dict));
     times.push_back(erase_measure_time<std::string, std::map<std::string, int> >(string_dict));
     times.push_back(erase_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
-    filepath = "C:/Users/psmolnik/Downloads/hashes_dir/hashes/data/hash_erase_string.csv";
+    filepath = "../data/hash_erase_string.csv";
     for(int i = 0; i < 6; i++)
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
