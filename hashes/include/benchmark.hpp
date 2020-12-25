@@ -196,7 +196,7 @@ std::vector<double> find_measure_time<int, std::map<int, int> >
         int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.find(key);
+        auto find_result_iterator = hash_map.find(key);
         auto t2 = std::chrono::high_resolution_clock::now();
 
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
@@ -216,7 +216,7 @@ std::vector<double> find_measure_time<std::string, std::map<std::string, int> >
         int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.find(key);
+        auto find_result_iterator = hash_map.find(key);
         auto t2 = std::chrono::high_resolution_clock::now();
 
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
@@ -236,7 +236,7 @@ std::vector<double> find_measure_time<int, std::hash_map<int, int> >
         int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.find(key);
+        auto find_result_iterator = hash_map.find(key);
         auto t2 = std::chrono::high_resolution_clock::now();
 
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
@@ -256,7 +256,7 @@ std::vector<double> find_measure_time<std::string, std::hash_map<std::string, in
         int value = vocabulary[i].second;
         hash_map.insert({key, value});
         auto t1 = std::chrono::high_resolution_clock::now();
-        hash_map.find(key);
+        auto find_result_iterator = hash_map.find(key);
         auto t2 = std::chrono::high_resolution_clock::now();
 
         results.push_back(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
