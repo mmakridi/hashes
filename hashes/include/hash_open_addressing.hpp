@@ -67,18 +67,25 @@ protected:
     uint64_t b2_param{0};
     uint64_t cur_h1 = 0;
     uint64_t cur_h2 = 0;
+    size_t curr_hash{0};
+    Key curr_key;
 public:
     CustomHashDouble(){};
     void set_hash_parameters();
 
     size_t operator()(const Key& key) {
+        //curr_key = key;
         cur_h1 = (static_cast<uint64_t>(key * a1_param + b1_param)) >> (this->w - this->M);
         cur_h2 = (static_cast<uint64_t>(key * a2_param + b2_param)) >> (this->w - this->M);
         if (!(cur_h2 & 1))
             cur_h2++;
+       // std::cout << cur_h1 << " " << cur_h2 << std::endl;
+
         return cur_h1;
     };
     size_t get_new_key(const size_t attemp_number) {
+        //std::cout << "Collizion\n"
+        //std::cout << m << std::endl;
         return static_cast<uint64_t>(cur_h1 +
                                      attemp_number * cur_h2)
                & (this->m - 1);
@@ -103,6 +110,9 @@ void CustomHashDouble<Key>::set_hash_parameters()
     if (!(a2_param & 1))
         a2_param++;
     b2_param = dist_b(gen);
+    //std::cout << std::numeric_limits<uint64_t>::max() << std::endl;
+    //std::cout << a1_param << " " << b1_param << std::endl;
+    //std::cout << a2_param << " " << b2_param << std::endl;
 };
 
 
@@ -142,7 +152,9 @@ bool HashMapOpenAddressing<Key, Value, Hash>::insert(const Key& key, const Value
     size_t table_index = hash(key);
 
     for(size_t attemp_number = 1; attemp_number < data.size(); attemp_number++)
-    {   if (initialized_data[table_index] == false)
+    {
+        //std::cout << table_index << " " << key << std::endl;
+        if (initialized_data[table_index] == false)
         {
             data[table_index] = {key, value};
             initialized_data[table_index] = true;
