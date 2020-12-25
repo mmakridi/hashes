@@ -89,6 +89,7 @@ protected:
     uint64_t M{0};
     uint64_t w{64};
     uint64_t a_param{1};
+    std::vector<uint64_t> poly_params{{1}};
     uint64_t degree{1};
     uint64_t b_param{0};
     size_t cur_hash;
@@ -105,6 +106,7 @@ public:
     };
     void set_independency_degree(uint64_t n) {
         this->degree = n;
+        this->poly_params.resize(n, 1);
     };
     uint64_t table_size() {
         return m;
@@ -118,18 +120,34 @@ public:
         if (!(a_param & 1))
             a_param++;
         b_param = dist_b(gen);
+
+        std::uniform_int_distribution<uint64_t> dist_c{1, static_cast<uint64_t>(uint64_t(2) << (w-1)) - 1};
+        for (size_t i = 0; i < poly_params.size(); ++i) {
+            poly_params[i] = dist_c(gen);
+        }
     };
     size_t operator()(const Key& key) {
-        cur_hash = 0;
-        uint64_t power{a_param};
+//        cur_hash = 0;
+//        uint64_t power{a_param};
+//        for (uint64_t deg = 1; deg <= degree; ++deg) {
+//            for (size_t j = 2; j <= deg; ++j) {
+//                power *= a_param;
+//            }
+//            cur_hash += key * power;
+//            power = a_param;
+//        }
+//        cur_hash = (cur_hash + b_param) >> (w-M);
+
+        uint64_t tmp_hash{0};
+        uint64_t key_degree = static_cast<uint64_t>(key);
         for (uint64_t deg = 1; deg <= degree; ++deg) {
-            for (size_t j = 2; j <= deg; ++j) {
-                power *= a_param;
-            }
-            cur_hash += key * power;
-            power = a_param;
+            for (size_t j = 2; j <= deg; ++j) {key_degree *= key;}
+            tmp_hash += key_degree * poly_params[deg-1];
+            key_degree = static_cast<uint64_t>(key);
         }
-        cur_hash = (cur_hash + b_param) >> (w-M);
+        tmp_hash = (tmp_hash + b_param) >> (w-M);
+        cur_hash = tmp_hash;
+
         return cur_hash;
     };
 

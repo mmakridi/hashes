@@ -42,63 +42,64 @@ int main() {
     std::vector<std::pair<std::string, int> > real_data_dict = create_real_data_vocabulary
             ("../data/words_alpha.txt", max_iter);
 
+    std::string filepath{};
 
 
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
-    std::string filepath = "../data/hash_insert_real_data_cuckoo_degrees.csv";
-    write_to_csv(filepath, times, cuckoo_degs);
-    times.clear();
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
+//    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
+//    filepath = "../data/hash_insert_real_data_cuckoo_degrees.csv";
+//    write_to_csv(filepath, times, cuckoo_degs);
+//    times.clear();
 //    return EXIT_SUCCESS;
 
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
-    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
-    filepath = "../data/hash_find_real_data_cuckoo_degrees.csv";
-    write_to_csv(filepath, times, cuckoo_degs);
-    times.clear();
-
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
-    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
-            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
-    filepath = "../data/hash_erase_real_data_cuckoo_degrees.csv";
-    write_to_csv(filepath, times, cuckoo_degs);
-    times.clear();
-    return EXIT_SUCCESS;
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
+//    times.push_back(find_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
+//    filepath = "../data/hash_find_real_data_cuckoo_degrees.csv";
+//    write_to_csv(filepath, times, cuckoo_degs);
+//    times.clear();
+//
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 1> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 2> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 3> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 4> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 5> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 6> > > >(real_data_dict));
+//    times.push_back(erase_measure_time<std::string, HashMapCuckoo<std::string,
+//            int, CustomHashStrings<CustomHash<uint64_t, 7> > > >(real_data_dict));
+//    filepath = "../data/hash_erase_real_data_cuckoo_degrees.csv";
+//    write_to_csv(filepath, times, cuckoo_degs);
+//    times.clear();
+//    return EXIT_SUCCESS;
 
 
     times.push_back(insert_measure_time<std::string, HashMapChained<std::string,
@@ -160,7 +161,7 @@ int main() {
         std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
     times.clear();
-    return EXIT_SUCCESS;
+//    return EXIT_SUCCESS;
 
     times.push_back(insert_measure_time<int, HashMapChained<int, int, CustomHash<int> > >(int_dict));
     times.push_back(insert_measure_time<int, HashMapCuckoo<int, int, CustomHash<int> > >(int_dict));
@@ -173,23 +174,6 @@ int main() {
     write_to_csv(filepath, times, col_names);
     times.clear();
 
-    times.push_back(insert_measure_time<std::string, HashMapChained<std::string,
-                    int, CustomHashStrings<CustomHash<uint64_t> > > >(string_dict));
-    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
-                   int, CustomHashStrings<CustomHash<uint64_t> > > >(string_dict));
-    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
-                    int, CustomHashStrings<CustomHashLinear<uint64_t> > > >(string_dict));
-    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
-                    int, CustomHashStrings<CustomHashQuadratic<uint64_t> > > >(string_dict));
-    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
-                    int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(string_dict));
-    times.push_back(insert_measure_time<std::string, std::map<std::string, int> >(string_dict));
-    times.push_back(insert_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
-    filepath = "../data/hash_insert_string.csv";
-
-    write_to_csv(filepath, times, col_names);
-    times.clear();
-
     times.push_back(find_measure_time<int, HashMapChained<int, int, CustomHash<int> > >(int_dict));
     times.push_back(find_measure_time<int, HashMapCuckoo<int, int, CustomHash<int> > >(int_dict));
     times.push_back(find_measure_time<int, HashMapOpenAddressing<int, int, CustomHashLinear<int> > >(int_dict));
@@ -198,6 +182,35 @@ int main() {
     times.push_back(find_measure_time<int, std::map<int, int> >(int_dict));
     times.push_back(find_measure_time<int, std::hash_map<int, int> >(int_dict));
     filepath = "../data/hash_find_int.csv";
+    write_to_csv(filepath, times, col_names);
+    times.clear();
+
+    times.push_back(erase_measure_time<int, HashMapChained<int, int, CustomHash<int> > >(int_dict));
+    times.push_back(erase_measure_time<int, HashMapCuckoo<int, int, CustomHash<int> > >(int_dict));
+    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashLinear<int> > >(int_dict));
+    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashQuadratic<int> > >(int_dict));
+    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(int_dict));
+    times.push_back(erase_measure_time<int, std::map<int, int> >(int_dict));
+    times.push_back(erase_measure_time<int, std::hash_map<int, int> >(int_dict));
+    filepath = "../data/hash_erase_int.csv";
+    for(int i = 0; i < 6; i++)
+        std::cout << times[i].size() << std::endl;
+    write_to_csv(filepath, times, col_names);
+    times.clear();
+
+    times.push_back(insert_measure_time<std::string, HashMapChained<std::string,
+            int, CustomHashStrings<CustomHash<uint64_t> > > >(string_dict));
+    times.push_back(insert_measure_time<std::string, HashMapCuckoo<std::string,
+            int, CustomHashStrings<CustomHash<uint64_t> > > >(string_dict));
+    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
+            int, CustomHashStrings<CustomHashLinear<uint64_t> > > >(string_dict));
+    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
+            int, CustomHashStrings<CustomHashQuadratic<uint64_t> > > >(string_dict));
+    times.push_back(insert_measure_time<std::string, HashMapOpenAddressing<std::string,
+            int, CustomHashStrings<CustomHashDouble<uint64_t> > > >(string_dict));
+    times.push_back(insert_measure_time<std::string, std::map<std::string, int> >(string_dict));
+    times.push_back(insert_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
+    filepath = "../data/hash_insert_string.csv";
     write_to_csv(filepath, times, col_names);
     times.clear();
 
@@ -214,19 +227,6 @@ int main() {
     times.push_back(find_measure_time<std::string, std::map<std::string, int> >(string_dict));
     times.push_back(find_measure_time<std::string, std::hash_map<std::string, int> >(string_dict));
     filepath = "../data/hash_find_string.csv";
-    write_to_csv(filepath, times, col_names);
-    times.clear();
-
-    times.push_back(erase_measure_time<int, HashMapChained<int, int, CustomHash<int> > >(int_dict));
-    times.push_back(erase_measure_time<int, HashMapCuckoo<int, int, CustomHash<int> > >(int_dict));
-    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashLinear<int> > >(int_dict));
-    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashQuadratic<int> > >(int_dict));
-    times.push_back(erase_measure_time<int, HashMapOpenAddressing<int, int, CustomHashDouble<int> > >(int_dict));
-    times.push_back(erase_measure_time<int, std::map<int, int> >(int_dict));
-    times.push_back(erase_measure_time<int, std::hash_map<int, int> >(int_dict));
-    filepath = "../data/hash_erase_int.csv";
-    for(int i = 0; i < 6; i++)
-        std::cout << times[i].size() << std::endl;
     write_to_csv(filepath, times, col_names);
     times.clear();
 
