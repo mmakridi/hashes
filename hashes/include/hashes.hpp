@@ -85,73 +85,110 @@ We are casting everything to static_cast<size_t>
 template <typename Key>
 class CustomHash : public HashFunction<Key> {
 protected:
-    uint64_t m{2};
-    uint64_t M{1};
+    uint64_t m{1};
+    uint64_t M{0};
     uint64_t w{64};
-    uint64_t a_param{0};
+    uint64_t a_param{1};
+    uint64_t degree{1};
     uint64_t b_param{0};
     size_t cur_hash;
 public:
     CustomHash(){};
-    void set_table_size(const uint64_t m, const uint64_t M)
-    {
-        this->m = m;
-        this->M = M;
+    void set_table_size(const uint64_t m_, const uint64_t M_) {
+        if ((2 << (M_-1)) != (m_)) {throw std::invalid_argument("arguments must satisfy m=2^M");}
+        this->m = m_;
+        this->M = M_;
     };
-    void set_hash_parameters();
+    void set_significant_bits(const uint64_t M_) {
+        this->M = M_;
+        this->m = 2 << (M_ - 1);
+    };
+    void set_independency_degree(uint64_t n) {
+        this->degree = n;
+    };
+    uint64_t table_size() {
+        return m;
+    };
+    void set_hash_parameters() {
+        if (M == 0) {throw std::invalid_argument("parameter M was not set, use `set_table_size` prior using this method");}
+        std::uniform_int_distribution<uint64_t> dist_a{1, static_cast<uint64_t>(uint64_t(2) << (w-1)) - 1};
+        std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(2) << (w-M-1)) - 1};
+        a_param = dist_a(gen);
+        //to get odd number
+        if (!(a_param & 1))
+            a_param++;
+        b_param = dist_b(gen);
+    };
     size_t operator()(const Key& key) {
-        cur_hash = static_cast<size_t>(
-                   (static_cast<uint64_t>(key * a_param + b_param)) >> (w - M)
-                   );
+        cur_hash = 0;
+        uint64_t power{a_param};
+        for (uint64_t deg = 1; deg <= degree; ++deg) {
+            for (size_t j = 2; j <= deg; ++j) {
+                power *= a_param;
+            }
+            cur_hash += key * power;
+            power = a_param;
+        }
+        cur_hash = (cur_hash + b_param) >> (w-M);
         return cur_hash;
     };
 
 };
 
-template<typename Key>
-void CustomHash<Key>::set_hash_parameters()
-{
-    std::uniform_int_distribution<uint64_t> dist_a{0, static_cast<uint64_t>(uint64_t(2) << (w-1)) - 1};
-    std::uniform_int_distribution<uint64_t> dist_b{0, static_cast<uint64_t>(uint64_t(2) << (w-M-1)) - 1};
-    a_param = dist_a(gen);
-    //to get odd number
-    if (!(a_param & 1))
-        a_param++;
-    b_param = dist_b(gen);
-};
-
 template <typename Hash>
 class CustomHashStrings {
 protected:
-    uint64_t m{2};
-    uint64_t M{1};
+//    uint64_t m{2};
+//    uint64_t M{1};
     uint64_t w{64};
-    uint64_t p{0};
+    uint64_t p{1};
     uint64_t a_param{0};
     size_t curr_hash{0};
     Hash hash{};
 public:
     CustomHashStrings(){};
-    void set_table_size(const uint64_t m, const uint64_t M)
-    {
-        this->m = m;
-        this->M = M;
+    void set_table_size(const uint64_t m_, const uint64_t M_) {
+        hash.set_table_size(m_, M_);
+//        this->m = m_;
+//        this->M = M_;
+    };
+    void set_significant_bits(const uint64_t M_) {
+        hash.set_significant_bits(M_);
+//        this->M = M_;
+//        this->m = 2 << (M_ - 1);
+    };
+    Hash& get_inner_hash_function() {
+        return hash;
+    };
+    void set_independency_degree(uint64_t n) {
+        this->hash.set_independency_degree(n);
+    };
+    void set_prime_modulo() {
+        if (hash.table_size() == 1) {throw std::invalid_argument("need to set inner hash table size prior to prime modulo");}
         for (auto elem : primes_asc) {
-            if (elem >= m) {
+            if (elem >= hash.table_size()) {
                 p = elem;
                 break;
             }
         }
-        hash.set_table_size(m, M);
     };
-    void set_hash_parameters();
+    void set_hash_parameters() {
+        std::uniform_int_distribution<uint64_t> dist_a{1, p};
+        a_param = dist_a(gen);
+        hash.set_hash_parameters();
+        set_prime_modulo();
+    };
     size_t operator()(const std::string& key) {
         size_t length = key.size();
         curr_hash = 0;
+        uint64_t power{a_param};
         for (size_t i = 0; i < length; ++i) {
-            curr_hash += static_cast<size_t>(
-                static_cast<uint64_t>(static_cast<uint64_t>((key[i]) * std::pow(a_param, i)) % p) % m
-            );
+            auto ascii_symbol = static_cast<uint64_t>(key[i]);
+            for (size_t j = 1; j < i; ++j) {
+                power *= a_param;
+            }
+            curr_hash += ((ascii_symbol * power) % p);
+            power = a_param;
         }
         curr_hash = hash(curr_hash);
         return curr_hash;
@@ -160,13 +197,6 @@ public:
 //        return static_cast<uint64_t>(this->curr_hash + attemp_number * c_param) & (this->m - 1);
         return hash.get_new_key(attemp_number);
     };
-};
-
-template <typename Hash>
-void CustomHashStrings<Hash>::set_hash_parameters() {
-    std::uniform_int_distribution<uint64_t> dist_a{0, p};
-    a_param = dist_a(gen);
-    hash.set_hash_parameters();
 };
 
 #endif //HASHES_HPP

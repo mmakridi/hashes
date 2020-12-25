@@ -34,10 +34,14 @@ HashMapCuckoo<Key, Value, Hash>::HashMapCuckoo(size_t n){
     uint64_t m = uint64_t(1) << M;
     this->data.resize(m);
     this->initialized_data.resize(m, false);
-    this->hash_first.set_table_size(m, M);
-    this->hash_second.set_table_size(m, M);
+
+    this->hash_first.set_significant_bits(M);
     this->hash_first.set_hash_parameters();
+//    this->hash_first.get_inner_hash_function().set_independency_degree(1);  //TODO: change to more n? logn?
+
+    this->hash_second.set_significant_bits(M);
     this->hash_second.set_hash_parameters();
+//    this->hash_second.get_inner_hash_function().set_independency_degree(1);  //TODO: change to more n? logn?
 };
 
 template<typename Key, typename Value, typename Hash>
@@ -65,8 +69,10 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
 
 template<typename Key, typename Value, typename Hash>
 bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash) {
+    std::cout << "key: " << key << std::endl;
     size_t index_0 = hash_first(key);
     size_t index_1 = hash_second(key);
+    std::cout << index_0 << " " << index_1 << std::endl;
 
     // if fits to its 1st position, then OK
     if (!initialized_data[index_0]) {
@@ -78,6 +84,7 @@ bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value,
         return false;
     }
 
+//    std::cout << "shifting" << std::endl;
     // if not, try its 2nd position and maybe move other elements
     size_t try_key = index_1;
     std::pair<std::pair<Key, size_t>, Value> to_move_elem{{key, index_0}, value};
