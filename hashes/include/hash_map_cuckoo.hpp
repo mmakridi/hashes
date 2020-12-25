@@ -69,10 +69,10 @@ void HashMapCuckoo<Key, Value, Hash>::rehash(){
 
 template<typename Key, typename Value, typename Hash>
 bool HashMapCuckoo<Key, Value, Hash>::insert(const Key& key, const Value& value, bool try_rehash) {
-    std::cout << "key: " << key << std::endl;
+//    std::cout << "key: " << key << std::endl;
     size_t index_0 = hash_first(key);
     size_t index_1 = hash_second(key);
-    std::cout << index_0 << " " << index_1 << std::endl;
+//    std::cout << index_0 << " " << index_1 << std::endl;
 
     // if fits to its 1st position, then OK
     if (!initialized_data[index_0]) {

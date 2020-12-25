@@ -82,7 +82,7 @@ We are casting everything to static_cast<size_t>
     h(a, b) = (uint64_t)(ax + b) >> (w - M)
  */
 
-template <typename Key>
+template <typename Key, size_t degs = 1>
 class CustomHash : public HashFunction<Key> {
 protected:
     uint64_t m{1};
@@ -93,7 +93,7 @@ protected:
     uint64_t b_param{0};
     size_t cur_hash;
 public:
-    CustomHash(){};
+    CustomHash(): degree{degs} {};
     void set_table_size(const uint64_t m_, const uint64_t M_) {
         if ((2 << (M_-1)) != (m_)) {throw std::invalid_argument("arguments must satisfy m=2^M");}
         this->m = m_;
@@ -184,10 +184,11 @@ public:
         uint64_t power{a_param};
         for (size_t i = 0; i < length; ++i) {
             auto ascii_symbol = static_cast<uint64_t>(key[i]);
-            for (size_t j = 1; j < i; ++j) {
+            for (size_t j = 2; j <= length-i; ++j) {
                 power *= a_param;
             }
             curr_hash += ((ascii_symbol * power) % p);
+            curr_hash %= p;
             power = a_param;
         }
         curr_hash = hash(curr_hash);
